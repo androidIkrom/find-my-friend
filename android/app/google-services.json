@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "296789513247",
+    "project_id": "chattingapp-5685c",
+    "storage_bucket": "chattingapp-5685c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296789513247:android:6348b54c2e44848d4f312a",
+        "android_client_info": {
+          "package_name": "com.example.audio_book"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBckH6pcG6R54_BDZ5k5BJIUHe-cDm1nPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296789513247:android:5e265b80f405c5444f312a",
+        "android_client_info": {
+          "package_name": "com.example.contact_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBckH6pcG6R54_BDZ5k5BJIUHe-cDm1nPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296789513247:android:795bd9249e4510654f312a",
+        "android_client_info": {
+          "package_name": "com.example.find_my_friend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBckH6pcG6R54_BDZ5k5BJIUHe-cDm1nPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
