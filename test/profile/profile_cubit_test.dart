@@ -144,10 +144,6 @@ void main() {
         initialAvatarUrl: 'https://example.com/old.jpg',
       ),
       setUp: () {
-        when(() => repository.ensureLocationPermission())
-            .thenAnswer((_) async => true);
-        when(() => repository.getCurrentPosition())
-            .thenAnswer((_) async => FakePosition(1.0, 2.0));
         when(() => repository.saveProfile(
               uid: any(named: 'uid'),
               name: any(named: 'name'),
@@ -174,10 +170,12 @@ void main() {
               uid: 'uid-1',
               name: 'Ada',
               avatarUrl: 'https://example.com/old.jpg',
-              location: const GeoPoint(1.0, 2.0),
+              location: null,
               isNewProfile: false,
             )).called(1);
         verifyNever(() => repository.uploadAvatar(any(), any()));
+        verifyNever(() => repository.ensureLocationPermission());
+        verifyNever(() => repository.getCurrentPosition());
       },
     );
   });

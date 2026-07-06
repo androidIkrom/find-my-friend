@@ -43,18 +43,24 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(status: ProfileStatus.submitting, errorMessage: null));
 
     try {
-      final granted = await _repository.ensureLocationPermission();
-      if (!granted) {
-        emit(
-          state.copyWith(
-            status: ProfileStatus.failure,
-            errorMessage: 'Location permission is required to continue.',
-          ),
-        );
-        return;
+      GeoPoint? location;
+
+      if (_isNewProfile) {
+        final granted = await _repository.ensureLocationPermission();
+        if (!granted) {
+          emit(
+            state.copyWith(
+              status: ProfileStatus.failure,
+              errorMessage: 'Location permission is required to continue.',
+            ),
+          );
+          return;
+        }
+
+        final position = await _repository.getCurrentPosition();
+        location = GeoPoint(position.latitude, position.longitude);
       }
 
-      final position = await _repository.getCurrentPosition();
       final avatarUrl = state.avatarFile != null
           ? await _repository.uploadAvatar(_uid, state.avatarFile!)
           : state.existingAvatarUrl!;
@@ -63,7 +69,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         uid: _uid,
         name: state.name.trim(),
         avatarUrl: avatarUrl,
-        location: GeoPoint(position.latitude, position.longitude),
+        location: location,
         isNewProfile: _isNewProfile,
       );
 

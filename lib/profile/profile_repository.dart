@@ -22,7 +22,10 @@ class ProfileRepository {
 
   Future<Position> getCurrentPosition() {
     return Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        timeLimit: Duration(seconds: 20),
+      ),
     );
   }
 
@@ -36,16 +39,18 @@ class ProfileRepository {
     required String uid,
     required String name,
     required String avatarUrl,
-    required GeoPoint location,
+    GeoPoint? location,
     required bool isNewProfile,
   }) {
     final doc = _firestore.collection('users').doc(uid);
     final data = <String, dynamic>{
       'name': name,
       'avatarUrl': avatarUrl,
-      'location': location,
       'updatedAt': FieldValue.serverTimestamp(),
     };
+    if (location != null) {
+      data['location'] = location;
+    }
     if (isNewProfile) {
       data['createdAt'] = FieldValue.serverTimestamp();
     }

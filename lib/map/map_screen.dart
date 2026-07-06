@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
@@ -93,21 +94,30 @@ class _MapViewState extends State<_MapView> {
   Future<void> _onUsersChanged(List<MapUser> users) async {
     final placemarks = <PlacemarkMapObject>[];
     for (final user in users) {
-      final icon = await _iconCache.iconFor(user.avatarUrl);
-      placemarks.add(
-        PlacemarkMapObject(
-          mapId: MapObjectId(user.uid),
-          point: Point(latitude: user.latitude, longitude: user.longitude),
-          icon: PlacemarkIcon.single(PlacemarkIconStyle(image: icon)),
-          text: PlacemarkText(
-            text: user.name,
-            style: const PlacemarkTextStyle(
-              size: 12,
-              placement: TextStylePlacement.bottom,
+      try {
+        final icon = await _iconCache.iconFor(user.avatarUrl);
+        placemarks.add(
+          PlacemarkMapObject(
+            mapId: MapObjectId(user.uid),
+            point: Point(latitude: user.latitude, longitude: user.longitude),
+            icon: PlacemarkIcon.single(PlacemarkIconStyle(image: icon)),
+            text: PlacemarkText(
+              text: user.name,
+              style: const PlacemarkTextStyle(
+                size: 12,
+                placement: TextStylePlacement.bottom,
+              ),
             ),
           ),
-        ),
-      );
+        );
+      } catch (error, stackTrace) {
+        // Skip this user's marker for this build rather than letting one
+        // bad avatar fetch (e.g. a deleted/expired URL) blank the whole map.
+        if (kDebugMode) {
+          debugPrint('Failed to build placemark for ${user.uid}: $error');
+          debugPrintStack(stackTrace: stackTrace);
+        }
+      }
     }
 
     if (!mounted) return;
@@ -127,6 +137,7 @@ class _MapViewState extends State<_MapView> {
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: Point(latitude: self.latitude, longitude: self.longitude),
+              zoom: 15,
             ),
           ),
         );
