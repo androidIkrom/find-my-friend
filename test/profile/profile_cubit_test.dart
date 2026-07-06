@@ -90,7 +90,7 @@ void main() {
     );
 
     blocTest<ProfileCubit, ProfileState>(
-      'uploads the avatar, saves the profile, and emits success',
+      'encodes the avatar, saves the profile, and emits success',
       build: () => ProfileCubit(repository: repository, uid: 'uid-1'),
       seed: () => ProfileState(name: 'Ada', avatarFile: avatarFile),
       setUp: () {
@@ -98,12 +98,12 @@ void main() {
             .thenAnswer((_) async => true);
         when(() => repository.getCurrentPosition())
             .thenAnswer((_) async => FakePosition(1.0, 2.0));
-        when(() => repository.uploadAvatar('uid-1', avatarFile))
-            .thenAnswer((_) async => 'https://example.com/avatar.jpg');
+        when(() => repository.encodeAvatar(avatarFile))
+            .thenAnswer((_) async => 'ZW5jb2RlZC1hdmF0YXI=');
         when(() => repository.saveProfile(
               uid: any(named: 'uid'),
               name: any(named: 'name'),
-              avatarUrl: any(named: 'avatarUrl'),
+              avatarBase64: any(named: 'avatarBase64'),
               location: any(named: 'location'),
               isNewProfile: any(named: 'isNewProfile'),
             )).thenAnswer((_) async {});
@@ -119,14 +119,14 @@ void main() {
           name: 'Ada',
           avatarFile: avatarFile,
           status: ProfileStatus.success,
-          existingAvatarUrl: 'https://example.com/avatar.jpg',
+          existingAvatarBase64: 'ZW5jb2RlZC1hdmF0YXI=',
         ),
       ],
       verify: (_) {
         verify(() => repository.saveProfile(
               uid: 'uid-1',
               name: 'Ada',
-              avatarUrl: 'https://example.com/avatar.jpg',
+              avatarBase64: 'ZW5jb2RlZC1hdmF0YXI=',
               location: const GeoPoint(1.0, 2.0),
               isNewProfile: true,
             )).called(1);
@@ -136,18 +136,18 @@ void main() {
 
   group('ProfileCubit.submit editing an existing profile', () {
     blocTest<ProfileCubit, ProfileState>(
-      'reuses the existing avatar URL when no new avatar is picked',
+      'reuses the existing avatar when no new avatar is picked',
       build: () => ProfileCubit(
         repository: repository,
         uid: 'uid-1',
         initialName: 'Ada',
-        initialAvatarUrl: 'https://example.com/old.jpg',
+        initialAvatarBase64: 'b2xkLWF2YXRhcg==',
       ),
       setUp: () {
         when(() => repository.saveProfile(
               uid: any(named: 'uid'),
               name: any(named: 'name'),
-              avatarUrl: any(named: 'avatarUrl'),
+              avatarBase64: any(named: 'avatarBase64'),
               location: any(named: 'location'),
               isNewProfile: any(named: 'isNewProfile'),
             )).thenAnswer((_) async {});
@@ -156,12 +156,12 @@ void main() {
       expect: () => [
         const ProfileState(
           name: 'Ada',
-          existingAvatarUrl: 'https://example.com/old.jpg',
+          existingAvatarBase64: 'b2xkLWF2YXRhcg==',
           status: ProfileStatus.submitting,
         ),
         const ProfileState(
           name: 'Ada',
-          existingAvatarUrl: 'https://example.com/old.jpg',
+          existingAvatarBase64: 'b2xkLWF2YXRhcg==',
           status: ProfileStatus.success,
         ),
       ],
@@ -169,11 +169,11 @@ void main() {
         verify(() => repository.saveProfile(
               uid: 'uid-1',
               name: 'Ada',
-              avatarUrl: 'https://example.com/old.jpg',
+              avatarBase64: 'b2xkLWF2YXRhcg==',
               location: null,
               isNewProfile: false,
             )).called(1);
-        verifyNever(() => repository.uploadAvatar(any(), any()));
+        verifyNever(() => repository.encodeAvatar(any()));
         verifyNever(() => repository.ensureLocationPermission());
         verifyNever(() => repository.getCurrentPosition());
       },

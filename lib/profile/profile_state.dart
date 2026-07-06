@@ -8,30 +8,30 @@ class ProfileState extends Equatable {
   const ProfileState({
     this.name = '',
     this.avatarFile,
-    this.existingAvatarUrl,
+    this.existingAvatarBase64,
     this.status = ProfileStatus.initial,
     this.errorMessage,
   });
 
   final String name;
   final File? avatarFile;
-  final String? existingAvatarUrl;
+  final String? existingAvatarBase64;
   final ProfileStatus status;
   final String? errorMessage;
 
-  bool get hasAvatar => avatarFile != null || existingAvatarUrl != null;
+  bool get hasAvatar => avatarFile != null || existingAvatarBase64 != null;
 
   ProfileState copyWith({
     String? name,
     File? avatarFile,
-    String? existingAvatarUrl,
+    String? existingAvatarBase64,
     ProfileStatus? status,
     String? errorMessage,
   }) {
     return ProfileState(
       name: name ?? this.name,
       avatarFile: avatarFile ?? this.avatarFile,
-      existingAvatarUrl: existingAvatarUrl ?? this.existingAvatarUrl,
+      existingAvatarBase64: existingAvatarBase64 ?? this.existingAvatarBase64,
       status: status ?? this.status,
       errorMessage: errorMessage,
     );
@@ -39,5 +39,5 @@ class ProfileState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [name, avatarFile, existingAvatarUrl, status, errorMessage];
+      [name, avatarFile, existingAvatarBase64, status, errorMessage];
 }

@@ -50,9 +50,9 @@ class _ProfileGate extends StatelessWidget {
 
         final data = snapshot.data?.data();
         final name = data?['name'] as String?;
-        final avatarUrl = data?['avatarUrl'] as String?;
+        final avatarBase64 = data?['avatarBase64'] as String?;
 
-        if (name == null || avatarUrl == null) {
+        if (name == null || avatarBase64 == null) {
           return BlocProvider(
             create: (_) => ProfileCubit(repository: ProfileRepository(), uid: uid),
             child: Builder(
@@ -64,7 +64,7 @@ class _ProfileGate extends StatelessWidget {
                       builder: (_) => MapScreen(
                         uid: uid,
                         currentName: profileState.name,
-                        currentAvatarUrl: profileState.existingAvatarUrl!,
+                        currentAvatarBase64: profileState.existingAvatarBase64!,
                       ),
                     ),
                   );
@@ -74,7 +74,11 @@ class _ProfileGate extends StatelessWidget {
           );
         }
 
-        return MapScreen(uid: uid, currentName: name, currentAvatarUrl: avatarUrl);
+        return MapScreen(
+          uid: uid,
+          currentName: name,
+          currentAvatarBase64: avatarBase64,
+        );
       },
     );
   }

@@ -1,66 +1,40 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:find_my_friend/map/avatar_fetcher.dart';
-import 'package:find_my_friend/map/circular_avatar_renderer.dart';
 import 'package:find_my_friend/map/placemark_icon_cache.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
-class MockAvatarFetcher extends Mock implements AvatarFetcher {}
-
-class MockCircularAvatarRenderer extends Mock
-    implements CircularAvatarRenderer {}
 
 void main() {
-  late MockAvatarFetcher fetcher;
-  late MockCircularAvatarRenderer renderer;
   late PlacemarkIconCache cache;
 
   setUp(() {
-    fetcher = MockAvatarFetcher();
-    renderer = MockCircularAvatarRenderer();
-    cache = PlacemarkIconCache(fetcher: fetcher, renderer: renderer);
+    cache = PlacemarkIconCache();
   });
 
-  test('fetches and renders an icon the first time it is requested', () async {
-    final sourceBytes = Uint8List.fromList([1, 2, 3]);
-    final pngBytes = Uint8List.fromList([4, 5, 6]);
-    when(() => fetcher.fetch('https://example.com/a.jpg'))
-        .thenAnswer((_) async => sourceBytes);
-    when(() => renderer.render(sourceBytes)).thenAnswer((_) async => pngBytes);
+  test('decodes a base64 avatar into a BitmapDescriptor', () {
+    final avatarBase64 = base64Encode(Uint8List.fromList([1, 2, 3]));
 
-    await cache.iconFor('https://example.com/a.jpg');
+    final descriptor = cache.iconFor(avatarBase64);
 
-    verify(() => fetcher.fetch('https://example.com/a.jpg')).called(1);
-    verify(() => renderer.render(sourceBytes)).called(1);
+    expect(descriptor, isNotNull);
   });
 
-  test('reuses the cached icon on subsequent calls for the same URL', () async {
-    final sourceBytes = Uint8List.fromList([1, 2, 3]);
-    final pngBytes = Uint8List.fromList([4, 5, 6]);
-    when(() => fetcher.fetch('https://example.com/a.jpg'))
-        .thenAnswer((_) async => sourceBytes);
-    when(() => renderer.render(sourceBytes)).thenAnswer((_) async => pngBytes);
+  test('reuses the cached descriptor for the same base64 string', () {
+    final avatarBase64 = base64Encode(Uint8List.fromList([4, 5, 6]));
 
-    await cache.iconFor('https://example.com/a.jpg');
-    await cache.iconFor('https://example.com/a.jpg');
+    final first = cache.iconFor(avatarBase64);
+    final second = cache.iconFor(avatarBase64);
 
-    verify(() => fetcher.fetch('https://example.com/a.jpg')).called(1);
+    expect(identical(first, second), isTrue);
   });
 
-  test('shares one in-flight request for concurrent calls to the same URL', () async {
-    final sourceBytes = Uint8List.fromList([1, 2, 3]);
-    final pngBytes = Uint8List.fromList([4, 5, 6]);
-    when(() => fetcher.fetch('https://example.com/a.jpg')).thenAnswer((_) async {
-      await Future<void>.delayed(const Duration(milliseconds: 10));
-      return sourceBytes;
-    });
-    when(() => renderer.render(sourceBytes)).thenAnswer((_) async => pngBytes);
+  test('returns different descriptors for different avatars', () {
+    final avatarA = base64Encode(Uint8List.fromList([7, 8, 9]));
+    final avatarB = base64Encode(Uint8List.fromList([10, 11, 12]));
 
-    final first = cache.iconFor('https://example.com/a.jpg');
-    final second = cache.iconFor('https://example.com/a.jpg');
-    await Future.wait([first, second]);
+    final first = cache.iconFor(avatarA);
+    final second = cache.iconFor(avatarB);
 
-    verify(() => fetcher.fetch('https://example.com/a.jpg')).called(1);
+    expect(identical(first, second), isFalse);
   });
 }

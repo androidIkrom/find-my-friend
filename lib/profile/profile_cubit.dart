@@ -11,11 +11,16 @@ class ProfileCubit extends Cubit<ProfileState> {
     required ProfileRepository repository,
     required String uid,
     String initialName = '',
-    String? initialAvatarUrl,
+    String? initialAvatarBase64,
   })  : _repository = repository,
         _uid = uid,
-        _isNewProfile = initialAvatarUrl == null,
-        super(ProfileState(name: initialName, existingAvatarUrl: initialAvatarUrl));
+        _isNewProfile = initialAvatarBase64 == null,
+        super(
+          ProfileState(
+            name: initialName,
+            existingAvatarBase64: initialAvatarBase64,
+          ),
+        );
 
   final ProfileRepository _repository;
   final String _uid;
@@ -61,14 +66,14 @@ class ProfileCubit extends Cubit<ProfileState> {
         location = GeoPoint(position.latitude, position.longitude);
       }
 
-      final avatarUrl = state.avatarFile != null
-          ? await _repository.uploadAvatar(_uid, state.avatarFile!)
-          : state.existingAvatarUrl!;
+      final avatarBase64 = state.avatarFile != null
+          ? await _repository.encodeAvatar(state.avatarFile!)
+          : state.existingAvatarBase64!;
 
       await _repository.saveProfile(
         uid: _uid,
         name: state.name.trim(),
-        avatarUrl: avatarUrl,
+        avatarBase64: avatarBase64,
         location: location,
         isNewProfile: _isNewProfile,
       );
@@ -76,7 +81,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           status: ProfileStatus.success,
-          existingAvatarUrl: avatarUrl,
+          existingAvatarBase64: avatarBase64,
         ),
       );
     } catch (_) {

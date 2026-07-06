@@ -34,7 +34,7 @@ class UsersMapRepository {
           .where((doc) {
             final data = doc.data();
             return data['name'] != null &&
-                data['avatarUrl'] != null &&
+                data['avatarBase64'] != null &&
                 data['location'] != null;
           })
           .map((doc) {
@@ -43,7 +43,7 @@ class UsersMapRepository {
             return MapUser(
               uid: doc.id,
               name: data['name'] as String,
-              avatarUrl: data['avatarUrl'] as String,
+              avatarBase64: data['avatarBase64'] as String,
               latitude: location.latitude,
               longitude: location.longitude,
             );

@@ -19,12 +19,12 @@ class MapScreen extends StatelessWidget {
     super.key,
     required this.uid,
     required this.currentName,
-    required this.currentAvatarUrl,
+    required this.currentAvatarBase64,
   });
 
   final String uid;
   final String currentName;
-  final String currentAvatarUrl;
+  final String currentAvatarBase64;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class MapScreen extends StatelessWidget {
       child: _MapView(
         uid: uid,
         currentName: currentName,
-        currentAvatarUrl: currentAvatarUrl,
+        currentAvatarBase64: currentAvatarBase64,
       ),
     );
   }
@@ -44,12 +44,12 @@ class _MapView extends StatefulWidget {
   const _MapView({
     required this.uid,
     required this.currentName,
-    required this.currentAvatarUrl,
+    required this.currentAvatarBase64,
   });
 
   final String uid;
   final String currentName;
-  final String currentAvatarUrl;
+  final String currentAvatarBase64;
 
   @override
   State<_MapView> createState() => _MapViewState();
@@ -61,7 +61,7 @@ class _MapViewState extends State<_MapView> {
   bool _hasCenteredCamera = false;
   List<PlacemarkMapObject> _placemarks = [];
   late String _currentName = widget.currentName;
-  late String _currentAvatarUrl = widget.currentAvatarUrl;
+  late String _currentAvatarBase64 = widget.currentAvatarBase64;
 
   void _openEditProfile() {
     Navigator.of(context).push(
@@ -71,7 +71,7 @@ class _MapViewState extends State<_MapView> {
             repository: ProfileRepository(),
             uid: widget.uid,
             initialName: _currentName,
-            initialAvatarUrl: _currentAvatarUrl,
+            initialAvatarBase64: _currentAvatarBase64,
           ),
           child: Builder(
             builder: (routeContext) => ProfileSetupScreen(
@@ -79,8 +79,8 @@ class _MapViewState extends State<_MapView> {
                 final profileState = routeContext.read<ProfileCubit>().state;
                 setState(() {
                   _currentName = profileState.name;
-                  _currentAvatarUrl =
-                      profileState.existingAvatarUrl ?? _currentAvatarUrl;
+                  _currentAvatarBase64 =
+                      profileState.existingAvatarBase64 ?? _currentAvatarBase64;
                 });
                 Navigator.of(routeContext).pop();
               },
@@ -95,7 +95,7 @@ class _MapViewState extends State<_MapView> {
     final placemarks = <PlacemarkMapObject>[];
     for (final user in users) {
       try {
-        final icon = await _iconCache.iconFor(user.avatarUrl);
+        final icon = _iconCache.iconFor(user.avatarBase64);
         placemarks.add(
           PlacemarkMapObject(
             mapId: MapObjectId(user.uid),

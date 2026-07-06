@@ -1,41 +1,20 @@
-import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-import 'avatar_fetcher.dart';
-import 'circular_avatar_renderer.dart';
-
+/// Decodes the already circular-cropped avatar PNG stored as base64 in each
+/// user's Firestore document into a [BitmapDescriptor], caching the result
+/// per base64 string so repeated snapshots don't re-decode unchanged avatars.
 class PlacemarkIconCache {
-  PlacemarkIconCache({AvatarFetcher? fetcher, CircularAvatarRenderer? renderer})
-      : _fetcher = fetcher ?? AvatarFetcher(),
-        _renderer = renderer ?? const CircularAvatarRenderer();
-
-  final AvatarFetcher _fetcher;
-  final CircularAvatarRenderer _renderer;
   final Map<String, BitmapDescriptor> _cache = {};
-  final Map<String, Future<BitmapDescriptor>> _pending = {};
 
-  Future<BitmapDescriptor> iconFor(String avatarUrl) {
-    final cached = _cache[avatarUrl];
-    if (cached != null) return Future.value(cached);
+  BitmapDescriptor iconFor(String avatarBase64) {
+    final cached = _cache[avatarBase64];
+    if (cached != null) return cached;
 
-    final inFlight = _pending[avatarUrl];
-    if (inFlight != null) return inFlight;
-
-    final future = _load(avatarUrl);
-    _pending[avatarUrl] = future;
-    return future;
-  }
-
-  Future<BitmapDescriptor> _load(String avatarUrl) async {
-    try {
-      final sourceBytes = await _fetcher.fetch(avatarUrl);
-      final Uint8List pngBytes = await _renderer.render(sourceBytes);
-      final descriptor = BitmapDescriptor.fromBytes(pngBytes);
-      _cache[avatarUrl] = descriptor;
-      return descriptor;
-    } finally {
-      _pending.remove(avatarUrl);
-    }
+    final bytes = base64Decode(avatarBase64);
+    final descriptor = BitmapDescriptor.fromBytes(bytes);
+    _cache[avatarBase64] = descriptor;
+    return descriptor;
   }
 }

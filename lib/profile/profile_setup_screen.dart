@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -66,8 +67,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   ImageProvider? _avatarImage(ProfileState state) {
     if (state.avatarFile != null) return FileImage(state.avatarFile!);
-    if (state.existingAvatarUrl != null) {
-      return NetworkImage(state.existingAvatarUrl!);
+    if (state.existingAvatarBase64 != null) {
+      return MemoryImage(base64Decode(state.existingAvatarBase64!));
     }
     return null;
   }

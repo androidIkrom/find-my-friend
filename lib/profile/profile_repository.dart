@@ -1,17 +1,21 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'circular_avatar_renderer.dart';
+
 class ProfileRepository {
-  ProfileRepository({FirebaseFirestore? firestore, FirebaseStorage? storage})
-      : _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance;
+  ProfileRepository({
+    FirebaseFirestore? firestore,
+    CircularAvatarRenderer? avatarRenderer,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _avatarRenderer = avatarRenderer ?? const CircularAvatarRenderer();
 
   final FirebaseFirestore _firestore;
-  final FirebaseStorage _storage;
+  final CircularAvatarRenderer _avatarRenderer;
 
   Future<bool> ensureLocationPermission() async {
     var status = await Permission.locationWhenInUse.status;
@@ -29,23 +33,25 @@ class ProfileRepository {
     );
   }
 
-  Future<String> uploadAvatar(String uid, File file) async {
-    final ref = _storage.ref('avatars/$uid.jpg');
-    await ref.putFile(file);
-    return ref.getDownloadURL();
+  /// Renders [file] into a small circular-cropped PNG and returns it as a
+  /// base64 string, ready to store directly in the user's Firestore document.
+  Future<String> encodeAvatar(File file) async {
+    final sourceBytes = await file.readAsBytes();
+    final pngBytes = await _avatarRenderer.render(sourceBytes);
+    return base64Encode(pngBytes);
   }
 
   Future<void> saveProfile({
     required String uid,
     required String name,
-    required String avatarUrl,
+    required String avatarBase64,
     GeoPoint? location,
     required bool isNewProfile,
   }) {
     final doc = _firestore.collection('users').doc(uid);
     final data = <String, dynamic>{
       'name': name,
-      'avatarUrl': avatarUrl,
+      'avatarBase64': avatarBase64,
       'updatedAt': FieldValue.serverTimestamp(),
     };
     if (location != null) {

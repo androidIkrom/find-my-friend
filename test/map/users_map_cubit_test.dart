@@ -30,14 +30,14 @@ void main() {
   const aliceHere = MapUser(
     uid: 'alice',
     name: 'Alice',
-    avatarUrl: 'https://example.com/alice.jpg',
+    avatarBase64: 'YWxpY2UtYXZhdGFy',
     latitude: 10,
     longitude: 20,
   );
   const bobHere = MapUser(
     uid: 'bob',
     name: 'Bob',
-    avatarUrl: 'https://example.com/bob.jpg',
+    avatarBase64: 'Ym9iLWF2YXRhcg==',
     latitude: 30,
     longitude: 40,
   );

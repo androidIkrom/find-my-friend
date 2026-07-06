@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:find_my_friend/map/circular_avatar_renderer.dart';
+import 'package:find_my_friend/profile/circular_avatar_renderer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _onePixelPngBase64 =
