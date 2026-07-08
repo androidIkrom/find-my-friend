@@ -64,44 +64,58 @@ class _AuthScreenState extends State<AuthScreen> {
             SnackBar(content: Text(state.errorMessage!)),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextFormField(
-                  key: const Key('emailField'),
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: _validateEmail,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  key: const Key('passwordField'),
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  validator: _validatePassword,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  key: const Key('submitButton'),
-                  onPressed: _submit,
-                  child: Text(_isSignUp ? 'Sign Up' : 'Sign In'),
-                ),
-                TextButton(
-                  key: const Key('toggleModeButton'),
-                  onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                  child: Text(
-                    _isSignUp
-                        ? 'Already have an account? Sign In'
-                        : 'Need an account? Sign Up',
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            key: const Key('emailField'),
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: const InputDecoration(labelText: 'Email'),
+                            validator: _validateEmail,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            key: const Key('passwordField'),
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(labelText: 'Password'),
+                            validator: _validatePassword,
+                          ),
+                          const SizedBox(height: 24),
+                          FilledButton(
+                            key: const Key('submitButton'),
+                            onPressed: _submit,
+                            child: Text(_isSignUp ? 'Sign Up' : 'Sign In'),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            key: const Key('toggleModeButton'),
+                            onPressed: () => setState(() => _isSignUp = !_isSignUp),
+                            child: Text(
+                              _isSignUp
+                                  ? 'Already have an account? Sign In'
+                                  : 'Need an account? Sign Up',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

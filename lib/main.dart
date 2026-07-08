@@ -13,6 +13,35 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+ThemeData _buildTheme() {
+  final base = ThemeData(colorSchemeSeed: Colors.deepPurple, useMaterial3: true);
+  final radius = BorderRadius.circular(16);
+
+  return base.copyWith(
+    appBarTheme: const AppBarTheme(centerTitle: true),
+    cardTheme: CardThemeData(
+      elevation: 2,
+      shadowColor: base.colorScheme.shadow.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(borderRadius: radius),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: base.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        minimumSize: const Size.fromHeight(48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    ),
+  );
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -21,8 +50,9 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (_) => AuthBloc(authRepository: AuthRepository()),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Find My Friend',
-        theme: ThemeData(colorSchemeSeed: Colors.deepPurple, useMaterial3: true),
+        theme: _buildTheme(),
         home: const AuthGate(),
       ),
     );

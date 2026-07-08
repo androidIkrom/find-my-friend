@@ -182,11 +182,26 @@ class _MapViewState extends State<_MapView> {
                   top: 0,
                   left: 0,
                   right: 0,
-                  child: Material(
-                    color: Colors.orange,
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Center(child: Text('Reconnecting…')),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Material(
+                        color: Theme.of(context).colorScheme.errorContainer,
+                        elevation: 2,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          child: Center(
+                            child: Text(
+                              'Reconnecting…',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onErrorContainer,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),

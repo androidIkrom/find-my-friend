@@ -33,8 +33,6 @@ class ProfileRepository {
     );
   }
 
-  /// Renders [file] into a small circular-cropped PNG and returns it as a
-  /// base64 string, ready to store directly in the user's Firestore document.
   Future<String> encodeAvatar(File file) async {
     final sourceBytes = await file.readAsBytes();
     final pngBytes = await _avatarRenderer.render(sourceBytes);

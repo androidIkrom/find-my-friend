@@ -2,9 +2,6 @@ import 'dart:convert';
 
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-/// Decodes the already circular-cropped avatar PNG stored as base64 in each
-/// user's Firestore document into a [BitmapDescriptor], caching the result
-/// per base64 string so repeated snapshots don't re-decode unchanged avatars.
 class PlacemarkIconCache {
   final Map<String, BitmapDescriptor> _cache = {};
 

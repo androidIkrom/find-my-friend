@@ -93,45 +93,75 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         },
         builder: (context, state) {
           final image = _avatarImage(state);
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  key: const Key('avatarPicker'),
-                  onTap: _pickAvatar,
-                  child: CircleAvatar(
-                    radius: 48,
-                    backgroundImage: image,
-                    child: image == null
-                        ? const Icon(Icons.add_a_photo, size: 32)
-                        : null,
+          return SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Center(
+                            child: GestureDetector(
+                              key: const Key('avatarPicker'),
+                              onTap: _pickAvatar,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .shadow
+                                          .withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: CircleAvatar(
+                                  radius: 48,
+                                  backgroundImage: image,
+                                  child: image == null
+                                      ? const Icon(Icons.add_a_photo, size: 32)
+                                      : null,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          TextField(
+                            key: const Key('nameField'),
+                            controller: _nameController,
+                            decoration: const InputDecoration(labelText: 'Your name'),
+                            onChanged: (value) =>
+                                context.read<ProfileCubit>().nameChanged(value),
+                          ),
+                          const SizedBox(height: 24),
+                          FilledButton(
+                            key: const Key('continueButton'),
+                            onPressed: state.status == ProfileStatus.submitting
+                                ? null
+                                : () => context.read<ProfileCubit>().submit(),
+                            child: state.status == ProfileStatus.submitting
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Text('Continue'),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 24),
-                TextField(
-                  key: const Key('nameField'),
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Your name'),
-                  onChanged: (value) =>
-                      context.read<ProfileCubit>().nameChanged(value),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  key: const Key('continueButton'),
-                  onPressed: state.status == ProfileStatus.submitting
-                      ? null
-                      : () => context.read<ProfileCubit>().submit(),
-                  child: state.status == ProfileStatus.submitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Continue'),
-                ),
-              ],
+              ),
             ),
           );
         },

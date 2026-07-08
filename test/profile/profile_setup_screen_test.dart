@@ -59,7 +59,7 @@ void main() {
     );
     await tester.pumpWidget(buildSubject());
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    final button = tester.widget<ElevatedButton>(
+    final button = tester.widget<FilledButton>(
       find.byKey(const Key('continueButton')),
     );
     expect(button.onPressed, isNull);
